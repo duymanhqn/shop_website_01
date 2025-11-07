@@ -1,0 +1,100 @@
+# models/models.py
+from datetime import datetime
+from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy import Numeric
+
+db = SQLAlchemy()
+
+# Người dùng
+class User(db.Model):
+    __tablename__ = "user"
+    id = db.Column(db.Integer, primary_key=True)
+    fullname = db.Column(db.String(100))
+    gmail = db.Column(db.String(100))
+    username = db.Column(db.String(50))
+    password = db.Column(db.String(255))  
+
+
+# Sản phẩm
+class Product(db.Model):
+    __tablename__ = "product"
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(100))
+    price = db.Column(db.Numeric(15, 0))   
+    image_url = db.Column(db.String(200))
+    description = db.Column(db.Text)
+    category = db.Column(db.String(50))
+    brand = db.Column(db.String(100))
+    chipset = db.Column(db.String(100))
+    ram = db.Column(db.String(50))
+    storage = db.Column(db.String(50))
+    battery = db.Column(db.Integer)
+    screen_size = db.Column(db.Float)
+    weight = db.Column(db.Float)
+    performance_score = db.Column(db.Float)
+    release_year = db.Column(db.Integer)
+    
+
+# Giỏ hàng
+class CartItem(db.Model):
+    __tablename__ = "cart_item"
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey("user.id"), nullable=False)
+    product_id = db.Column(db.Integer, db.ForeignKey("product.id"), nullable=False)
+    quantity = db.Column(db.Integer, default=1)
+    total_price = db.Column(db.Numeric(15, 0), nullable=False, default=0)
+
+    user = db.relationship("User", backref="cart_items", lazy=True)
+    product = db.relationship("Product", backref="cart_items", lazy="joined")
+
+    def __init__(self, user_id, product_id, quantity=1):
+        self.user_id = user_id
+        self.product_id = product_id
+        self.quantity = quantity
+        product = Product.query.get(product_id)
+        self.total_price = (product.price * quantity) if product else 0
+
+    def update_total(self):
+        if self.product:
+            self.total_price = self.product.price * self.quantity
+
+
+# Đơn hàng
+
+class Order(db.Model):
+    __tablename__ = "orders"
+
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey("user.id"), nullable=False)
+
+    # Tổng tiền đơn hàng (VND)
+    total_amount = db.Column(db.Numeric(15, 0), nullable=False)
+
+    # Phương thức thanh toán: "Bank" hoặc "COD"
+    payment_method = db.Column(db.String(50), default="Bank")
+
+    # Trạng thái đơn hàng
+    # Các giá trị có thể: "Chờ thanh toán", "Đã thanh toán", "Đang xử lý", "Hoàn tất", "Hủy"
+    status = db.Column(db.String(50), default="Chờ thanh toán")
+
+    # Thông tin thanh toán qua ngân hàng (nếu có)
+    bank_name = db.Column(db.String(100))           
+    bank_account = db.Column(db.String(50))         
+    bank_account_name = db.Column(db.String(100))   
+    transfer_note = db.Column(db.String(255))       
+
+    # Thời gian thanh toán và tạo đơn
+    paid_at = db.Column(db.DateTime, nullable=True)
+    created_at = db.Column(db.DateTime, default=datetime.now)
+
+    # Liên kết ngược tới người dùng
+    user = db.relationship("User", backref="orders", lazy=True)
+
+class Admin(db.Model):
+    __tablename__ = "admin"
+
+    id = db.Column(db.Integer, primary_key=True)
+    fullnamead = db.Column(db.String(100))
+    gmail = db.Column(db.String(100))          
+    usernamead = db.Column(db.String(100), unique=True)
+    password = db.Column(db.String(100))

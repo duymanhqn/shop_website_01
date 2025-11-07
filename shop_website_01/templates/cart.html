@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Giỏ hàng</title>
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='css/cart.css') }}"
+    />
+  </head>
+
+  <body>
+    <!--  THANH NAVBAR -->
+    <div class="navbar">
+      <div class="logo">MHTHM</div>
+      <div class="menu">
+        <a href="/">Trang chủ</a>
+        <a href="{{ url_for('product_info_bp.product_info') }}">Sản phẩm</a>
+        <a href="#">Khuyến mãi</a>
+        <a href="{{ url_for('contact_bp.contact') }}">Liên hệ</a>
+      </div>
+      <div class="right">
+        <a href="{{ url_for('auth_bp.logout') }}" class="logout-btn">
+          Đăng xuất
+        </a>
+      </div>
+    </div>
+
+    <!--  KHU VỰC GIỎ HÀNG -->
+    <section class="cart-section">
+      <div class="cart-container">
+        <h2>Giỏ hàng của bạn</h2>
+
+        {% if cart_items %}
+        <table>
+          <thead>
+            <tr>
+              <th>Hình ảnh</th>
+              <th>Tên sản phẩm</th>
+              <th>Số lượng</th>
+              <th>Giá</th>
+              <th>Thành tiền</th>
+              <th>Hành động</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for item in cart_items %}
+            <tr>
+              <td>
+                <!--  Đúng đường dẫn: Flask sẽ lấy static/images/IP_16.png -->
+                <img
+                  src="{{ url_for('static', filename=item.product.image_url) }}"
+                  alt="{{ item.product.name }}"
+                  onerror="this.onerror=null; this.src='{{ url_for('static', filename='images/no-image.png') }}';"
+                />
+              </td>
+              <td>{{ item.product.name }}</td>
+              <td>
+                <div class="quantity-control">
+                  <!-- 🔹 Nút giảm -->
+                  <form
+                    action="{{ url_for('cart_bp.update_quantity', product_id=item.product.id, action='decrease') }}"
+                    method="POST"
+                    style="display: inline"
+                  >
+                    <button type="submit" class="qty-btn">−</button>
+                  </form>
+
+                  {{ item.quantity }}
+
+                  <!-- 🔹 Nút tăng -->
+                  <form
+                    action="{{ url_for('cart_bp.update_quantity', product_id=item.product.id, action='increase') }}"
+                    method="POST"
+                    style="display: inline"
+                  >
+                    <button type="submit" class="qty-btn">+</button>
+                  </form>
+                </div>
+              </td>
+
+              <td>{{ "{:,.0f}".format(item.product.price) }} VND</td>
+              <td>{{ "{:,.0f}".format(item.total_price) }} VND</td>
+
+              <td>
+                <form
+                  action="{{ url_for('cart_bp.delete_item', product_id=item.product.id) }}"
+                  method="POST"
+                >
+                  <button type="submit" class="delete-btn">Xóa</button>
+                </form>
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+
+        <!--  Tổng tiền -->
+        <div class="total">Tổng cộng: {{ "{:,.0f}".format(total) }} VND</div>
+
+        <!--  Nút hành động -->
+        <div class="action">
+          <a
+            href="{{ url_for('product_info_bp.product_info') }}"
+            class="back-btn"
+            >Tiếp tục mua hàng</a
+          >
+          <a href="{{ url_for('order_bp.checkout') }}" class="btn-primary"
+            >Thanh toán</a
+          >
+        </div>
+
+        {% else %}
+        <p class="empty-cart">Giỏ hàng của bạn đang trống!</p>
+        <a
+          href="{{ url_for('product_info_bp.product_info') }}"
+          class="back-btn"
+          >Xem sản phẩm</a
+        >
+        {% endif %}
+      </div>
+    </section>
+  </body>
+</html>

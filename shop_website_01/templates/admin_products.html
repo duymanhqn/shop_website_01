@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <title>Quản lí hàng hóa - HTMTH</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/admin.css') }}">
+</head>
+<body>
+
+<div class="header">
+    <h1>HTMTH</h1>
+    <a href="{{ url_for('admin_bp.logout') }}" class="logout-btn">Đăng xuất</a>
+</div>
+
+<div class="container">
+    <div class="sidebar">
+        <a href="{{ url_for('admin_bp.dashboard') }}">Quản lí khách hàng</a>
+        <a href="{{url_for('admin_bp.orders')}}">Quản lí đơn hàng</a>
+        <a href="{{ url_for('admin_bp.products') }}">Quản lí hàng hóa</a>
+    </div>
+
+    <div class="content">
+        <h2>Danh sách hàng hóa</h2>
+
+        <table>
+            <tr>
+                <th>ID</th>
+                <th>Tên</th>
+                <th>Giá</th>
+                <th>Ảnh</th>
+                <th>Mô tả</th>
+                <th>Loại</th>
+                <th>Thao tác</th>
+            </tr>
+            {% for p in products %}
+            <tr>
+                <td>{{ p.id }}</td>
+                <td>{{ p.name }}</td>
+                <td>{{ "{:,.0f}".format(p.price) }}₫</td>
+                <td>
+                    <img src="{{ url_for('static', filename=p.image_url) }}" alt="{{ p.name }}" class="product-img">
+                </td>
+                <td>{{ p.description }}</td>
+                <td>{{ p.category }}</td>
+                <td>
+                    <a href="{{ url_for('admin_bp.edit_product', pid=p.id) }}">✏️ Sửa</a> |
+                    <a href="{{ url_for('admin_bp.delete_product', pid=p.id) }}"
+                       onclick="return confirm('Xóa sản phẩm này?')">🗑️ Xóa</a>
+                </td>
+            </tr>
+            {% endfor %}
+        </table>
+<!--  PHÂN TRANG -->
+    <div class="pagination">
+        {% if current_page > 1 %}
+            <a href="{{ url_for('admin_bp.products', page=current_page-1) }}" class="page-btn">« Trước</a>
+        {% endif %}
+
+        {% for page_num in range(1, total_pages + 1) %}
+            {% if page_num == current_page %}
+                <span class="page-btn active">{{ page_num }}</span>
+            {% else %}
+                <a href="{{ url_for('admin_bp.products', page=page_num) }}" class="page-btn">{{ page_num }}</a>
+            {% endif %}
+        {% endfor %}
+
+        {% if current_page < total_pages %}
+            <a href="{{ url_for('admin_bp.products', page=current_page+1) }}" class="page-btn">Sau »</a>
+        {% endif %}
+    </div>
+        <h3>Thêm sản phẩm mới</h3>
+<form method="POST" enctype="multipart/form-data" action="{{ url_for('admin_bp.add_product') }}">
+    <input type="text" name="name" placeholder="Tên sản phẩm" required>
+    <input type="number" name="price" placeholder="Giá" required>
+    <input type="file" name="image_file" accept="image/*" required>
+    <input type="text" name="description" placeholder="Mô tả">
+    <input type="text" name="category" placeholder="Loại">
+    <button type="submit">Thêm</button>
+</form>
+
+    </div>
+</div>
+ 
+</div>
+</body>
+</html>

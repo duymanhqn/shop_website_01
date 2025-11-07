@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <title>{{ product.name }} - Chi tiết sản phẩm</title>
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='css/product_detail.css') }}"
+    />
+  </head>
+  <body>
+    <!--  Navbar -->
+    <nav>
+      <div class="logo">MHTHM</div>
+      <div class="menu">
+        <a href="{{ url_for('home_bp.home') }}">Trang chủ</a>
+        <a href="{{ url_for('home_bp.home') }}">Sản phẩm</a>
+        <a href="#">Khuyến mãi</a>
+        <a href="#">Liên hệ</a>
+      </div>
+      <div class="cart">
+        <a href="{{ url_for('cart_bp.cart') }}">🛒 Giỏ hàng</a>
+      </div>
+    </nav>
+
+    <!--  Header -->
+    <header>
+      <h1>Chi tiết sản phẩm</h1>
+    </header>
+
+    <!--  Product Detail -->
+    <main class="detail-container">
+      <div class="product-image">
+        <img
+          src="{{ url_for('static', filename=product.image_url) }}"
+          alt="{{ product.name }}"
+        />
+      </div>
+
+      <div class="product-info">
+        <h2>{{ product.name }}</h2>
+        <p class="price">{{ "{:,.0f}".format(product.price) }} VND</p>
+        <p class="desc">{{ product.description }}</p>
+        <div class="specs">
+          <h3>Thông số kỹ thuật</h3>
+            <ul>
+              <li>Hãng: {{ product.brand }}</li>
+              <li>Chipset: {{ product.chipset }}</li>
+              <li>RAM: {{ product.ram }}</li>
+              <li>Storage: {{ product.storage }}</li>
+              <li>Pin: {{ product.battery }} mAh</li>
+              <li>Màn hình: {{ product.screen_size }} inch</li>
+              <li>Cân nặng: {{ product.weight }} g</li>
+              <li>Điểm hiệu năng: {{ product.performance_score }}</li>
+              <li>Năm ra mắt: {{ product.release_year }}</li>
+            </ul>
+        </div>
+
+        
+
+        <div class="buttons">
+          <a
+            href="{{ url_for('product_bp.add_to_cart', id=product.id) }}"
+            class="add-btn"
+            id="addToCartBtn"
+          >
+            Thêm vào giỏ hàng
+          </a>
+
+          <!-- Thông báo hiển thị dưới nút -->
+          <div class="alert-message" id="alertMessage"></div>
+
+          <a href="{{ url_for('home_bp.home') }}" class="back-btn"> Quay lại</a>
+        </div>
+      </div>
+    </main>
+
+    <script src="{{ url_for('static', filename='js/product_detail.js') }}"></script>
+  </body>
+</html>

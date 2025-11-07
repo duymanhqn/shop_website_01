@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <title>Thanh toán qua ngân hàng</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/bank_payment.css') }}">
+</head>
+<body>
+  <div class="payment-container">
+    <h1>Thanh toán qua ngân hàng</h1>
+
+    <div class="info">
+      <p><strong>Số tiền:</strong> {{ "{:,.0f}".format(order.total_amount) }} VND</p>
+      <hr>
+      <p><strong>Ngân hàng:</strong> {{ order.bank_name }}</p>
+      <p><strong>Số tài khoản:</strong> {{ order.bank_account }}</p>
+      <p><strong>Chủ tài khoản:</strong> {{ order.bank_account_name }}</p>
+      <p><strong>Nội dung chuyển khoản:</strong> {{ order.transfer_note }}</p>
+    </div>
+
+    <div class="qr-box">
+      <img src="{{ qr_url }}" alt="QR chuyển khoản" class="qr-image">
+      <p class="qr-note">Quét mã bằng ứng dụng ngân hàng để điền sẵn thông tin chuyển khoản.</p>
+    </div>
+
+    <!-- Khi nhấn nút, gửi POST để xác nhận đã chuyển khoản -->
+    <form action="{{ url_for('order_bp.confirm_bank', order_id=0) }}" method="POST" class="confirm-form">
+      <button type="submit" class="btn-confirm">Tôi đã chuyển khoản</button>
+    </form>
+  </div>
+</body>
+</html>
