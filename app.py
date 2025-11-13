@@ -11,7 +11,7 @@ from routes.product_info_routes import product_info_bp
 from routes.contact_routes import contact_bp
 from routes.admin_routes import admin_bp
 from routes.chat_routes import chat_bp
-from routes.ai_routes import ai_bp
+
 from flask_cors import CORS
 import os
 
@@ -51,7 +51,7 @@ app.register_blueprint(cart_bp)
 app.register_blueprint(product_info_bp)
 app.register_blueprint(contact_bp)
 app.register_blueprint(admin_bp)
-app.register_blueprint(ai_bp)
+
 app.register_blueprint(chat_bp)
 app.register_blueprint(order_bp, url_prefix="/order")
 # =============================
