@@ -3,14 +3,11 @@
   <head>
     <meta charset="UTF-8" />
     <title>Thanh toán đơn hàng</title>
-    <link
-      rel="stylesheet"
-      href="{{ url_for('static', filename='css/checkout.css') }}"
-    />
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/checkout.css') }}">
   </head>
 
   <body>
-    <!--  Thanh điều hướng -->
+    <!-- Thanh điều hướng -->
     <nav class="navbar">
       <div class="logo">MHTHM</div>
 
@@ -22,17 +19,15 @@
       </div>
 
       <div class="right">
-        <a href="{{ url_for('cart_bp.cart') }}"> Giỏ hàng</a>
+        <a href="{{ url_for('cart_bp.cart') }}">Giỏ hàng</a>
         {% if session.get('username') %}
         <span class="user">👤 {{ session['username'] }}</span>
-        <a href="{{ url_for('auth_bp.logout') }}" class="logout-btn"
-          >Đăng xuất</a
-        >
+        <a href="{{ url_for('auth_bp.logout') }}" class="logout-btn">Đăng xuất</a>
         {% endif %}
       </div>
     </nav>
 
-    <!--  Khu vực thanh toán -->
+    <!-- Khu vực thanh toán -->
     <section class="checkout-section">
       <div class="checkout-container">
         <h2>Thanh toán đơn hàng</h2>
@@ -56,25 +51,36 @@
 
         <h3 class="total">Tổng cộng: {{ "{:,.0f}".format(total) }} VND</h3>
 
-        <form
-          action="{{ url_for('order_bp.confirm_order') }}"
-          method="POST"
-          class="payment-form"
-        >
-          <p>Chọn phương thức thanh toán:</p>
+        <form id="paymentForm" method="POST">
+          <h3>Chọn phương thức thanh toán:</h3>
 
-          <label class="payment-option">
-            <input type="radio" name="payment_method" value="COD" />
-            Thanh toán khi nhận hàng
-          </label>
-          <label class="payment-option">
-            <input type="radio" name="payment_method" value="Bank" checked />
-            Chuyển khoản ngân hàng
-          </label>
+          <label>
+            <input type="radio" name="payment_method" value="COD" checked>
+            Thanh toán khi nhận hàng (COD)
+          </label><br>
 
-          <button type="submit" class="confirm-btn">Xác nhận thanh toán</button>
+          <label>
+            <input type="radio" name="payment_method" value="MOMO">
+            Thanh toán qua MoMo
+          </label><br><br>
+
+          <button type="submit" class="confirm-btn">Xác nhận đặt hàng</button>
         </form>
       </div>
     </section>
+
+    <script>
+      document.getElementById("paymentForm").addEventListener("submit", function (e) {
+        e.preventDefault();
+        const method = document.querySelector('input[name="payment_method"]:checked').value;
+
+        if (method === "MOMO") {
+          window.location.href = "{{ url_for('order_bp.momo_payment') }}";
+        } else {
+          this.action = "{{ url_for('order_bp.confirm_order') }}";
+          this.submit();
+        }
+      });
+    </script>
   </body>
 </html>

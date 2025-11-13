@@ -1,124 +1,198 @@
-from models.models import db
-from sqlalchemy import text
-import re, unicodedata
+from flask import session, jsonify
+from models.models import db, Product
+import re, unicodedata, random
+from difflib import SequenceMatcher
+from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.metrics.pairwise import cosine_similarity
+from functools import lru_cache
 
+# ==============================
+# 1️⃣ Mapping thương hiệu
+# ==============================
+BRAND_MAP = {
+    "iphone": ["ip", "ifone", "ai phôn", "ai phone"],
+    "samsung": ["glx", "galaxy", "sam sung"],
+    "asus": ["asua", "may asus", "laptop asus"],
+    "macbook": ["mac", "mác búc", "mắc búc", "apple laptop"],
+    "laptop": ["lap", "latop", "may tinh xach tay"]
+}
 
-# ===== Lấy danh sách sản phẩm =====
+# ==============================
+# 2️⃣ Cache sản phẩm
+# ==============================
+@lru_cache(maxsize=1)
 def get_all_products():
-    result = db.session.execute(text("""
-        SELECT id, name, description, price, brand, chipset, ram, storage, battery,
-               screen_size, performance_score, release_year, weight
-        FROM product;
-    """))
-    rows = result.fetchall()
-    cols = ["id", "name", "description", "price", "brand", "chipset", "ram",
-            "storage", "battery", "screen_size", "performance_score", "release_year", "weight"]
-    return [dict(zip(cols, r)) for r in rows]
+    products = Product.query.all()
+    return [
+        {
+            "id": p.id,
+            "name": p.name,
+            "price": float(p.price or 0),
+            "image_url": p.image_url,
+            "description": p.description or "",
+            "category": (p.category or "").lower(),
+            "brand": (p.brand or "").lower(),
+            "chipset": (p.chipset or "").lower(),
+            "ram": (p.ram or "").lower(),
+            "storage": (p.storage or "").lower(),
+            "battery": p.battery or 0,
+            "screen_size": p.screen_size or 0,
+            "weight": p.weight or 0,
+            "performance_score": p.performance_score or 0,
+            "release_year": p.release_year or 0,
+        }
+        for p in products
+    ]
 
-
-# ===== Chuẩn hóa văn bản =====
-def normalize_text(text):
+# ==============================
+# 3️⃣ Chuẩn hóa text
+# ==============================
+def normalize(text: str):
     if not text:
         return ""
-    text = text.lower().strip()
-    text = unicodedata.normalize("NFD", text)
-    text = "".join(c for c in text if unicodedata.category(c) != "Mn")
-    text = re.sub(r"[^a-z0-9\s]", " ", text)
-    text = re.sub(r"\s+", " ", text)
-    return text
+    t = unicodedata.normalize("NFD", text.lower())
+    t = "".join(c for c in t if unicodedata.category(c) != "Mn")
+    t = re.sub(r"[^a-z0-9\s]", " ", t)
+    for k, vs in BRAND_MAP.items():
+        for v in vs:
+            t = t.replace(v, k)
+    return re.sub(r"\s+", " ", t).strip()
 
+# ==============================
+# 4️⃣ Nhận diện thương hiệu
+# ==============================
+def extract_brand(msg, products):
+    msg = normalize(msg)
+    brands = {p["brand"] for p in products if p.get("brand")}
+    for k, vs in BRAND_MAP.items():
+        if k in msg or any(v in msg for v in vs):
+            return k if k in brands else None
+    for b in brands:
+        if b in msg:
+            return b
+    return None
 
-# ===== Tìm sản phẩm gần đúng =====
-def find_product(name, products):
-    name_norm = normalize_text(name)
-    best = None
-    score = 0
-    for p in products:
-        pname = normalize_text(p["name"])
-        s = len(set(name_norm.split()) & set(pname.split()))
-        if s > score:
-            score = s
-            best = p
-    return best
+# ==============================
+# 5️⃣ Tìm sản phẩm thông minh (TF-IDF + fuzzy)
+# ==============================
+def find_product(user_msg, products):
+    msg = normalize(user_msg)
+    if not msg:
+        return None
 
+    texts = [
+        normalize(f"{p['name']} {p['brand']} {p['chipset']} {p['ram']} {p['storage']} {p['description']}")
+        for p in products
+    ]
+    try:
+        vec = TfidfVectorizer().fit_transform(texts + [msg])
+        sims = cosine_similarity(vec[-1], vec[:-1]).flatten()
+    except Exception:
+        sims = [0] * len(products)
 
-# ===== So sánh hai sản phẩm =====
+    best = max(
+        ((i, sims[i] * 0.7 + SequenceMatcher(None, msg, normalize(products[i]['name'])).ratio() * 0.3)
+         for i in range(len(products))),
+        key=lambda x: x[1], default=(None, 0)
+    )
+    return products[best[0]] if best[1] > 0.25 else None
+
+# ==============================
+# 6️⃣ Xử lý đặc biệt (đắt/rẻ/pin/hiệu năng…)
+# ==============================
+def find_special_case(msg, products):
+    msg = normalize(msg)
+    brand = extract_brand(msg, products)
+    pool = [p for p in products if not brand or brand in (p["brand"] or "")]
+
+    if not pool:
+        return None
+
+    # Đắt / Rẻ
+    if any(k in msg for k in ["dat nhat", "mac nhat", "cao nhat", "dắt nhat"]):
+        p = max(pool, key=lambda x: x["price"])
+        return f"Sản phẩm đắt nhất{(' của ' + brand) if brand else ''} là {p['name']} ({int(p['price']):,}đ)."
+    if "re nhat" in msg:
+        p = min(pool, key=lambda x: x["price"])
+        return f"Sản phẩm rẻ nhất{(' của ' + brand) if brand else ''} là {p['name']} ({int(p['price']):,}đ)."
+
+    # Pin trâu
+    if "pin" in msg and any(k in msg for k in ["tot nhat", "trau"]):
+        p = max(pool, key=lambda x: x["battery"])
+        return f"Sản phẩm có pin trâu nhất{(' của ' + brand) if brand else ''} là {p['name']} ({p['battery']} mAh)."
+
+    # Hiệu năng cao nhất
+    if "hieu nang" in msg or "manh" in msg:
+        p = max(pool, key=lambda x: x["performance_score"])
+        return f"Sản phẩm mạnh nhất{(' của ' + brand) if brand else ''} là {p['name']} ({p['performance_score']} điểm)."
+
+    # Mới nhất
+    if "moi nhat" in msg or "ra mat" in msg:
+        p = max(pool, key=lambda x: x["release_year"])
+        return f"Sản phẩm mới nhất{(' của ' + brand) if brand else ''} là {p['name']} (ra mắt {p['release_year']})."
+
+    return None
+
+# ==============================
+# 7️⃣ So sánh 2 sản phẩm
+# ==============================
 def compare_products(n1, n2, products):
-    p1 = find_product(n1, products)
-    p2 = find_product(n2, products)
+    p1, p2 = find_product(n1, products), find_product(n2, products)
     if not p1 or not p2:
         return "Không tìm thấy sản phẩm để so sánh."
 
-    reply = (
-        f"So sánh:\n"
-        f"- {p1['name']} — {p1['price']:,}đ | {p1['battery']}mAh | {p1['chipset']} | RAM {p1['ram']}\n"
-        f"- {p2['name']} — {p2['price']:,}đ | {p2['battery']}mAh | {p2['chipset']} | RAM {p2['ram']}\n"
+    attrs = [("performance_score", "hiệu năng"), ("battery", "pin"), ("price", "giá")]
+    diff = [label for key, label in attrs if p1.get(key) != p2.get(key)]
+    better = p1 if p1["performance_score"] >= p2["performance_score"] else p2
+
+    return (
+        f"So sánh {p1['name']} và {p2['name']}:\n"
+        f"- {p1['name']}: {int(p1['price']):,}đ, chip {p1['chipset']}, RAM {p1['ram']}, pin {p1['battery']}mAh.\n"
+        f"- {p2['name']}: {int(p2['price']):,}đ, chip {p2['chipset']}, RAM {p2['ram']}, pin {p2['battery']}mAh.\n"
+        f"➡️ {better['name']} tốt hơn (xét {', '.join(diff) if diff else 'tổng thể'})."
     )
 
-    better = []
-    if p1["performance_score"] != p2["performance_score"]:
-        best = p1 if p1["performance_score"] > p2["performance_score"] else p2
-        better.append(f"Hiệu năng tốt hơn: {best['name']}")
-    if p1["battery"] != p2["battery"]:
-        best = p1 if p1["battery"] > p2["battery"] else p2
-        better.append(f"Pin lâu hơn: {best['name']}")
-    if p1["price"] != p2["price"]:
-        best = p1 if p1["price"] < p2["price"] else p2
-        better.append(f"Giá rẻ hơn: {best['name']}")
-
-    if better:
-        reply += "\n" + " | ".join(better)
-    else:
-        reply += "\nHai sản phẩm khá tương đồng."
-    return reply
-
-
-# ===== Xử lý tin nhắn chatbot =====
+# ==============================
+# 8️⃣ Xử lý tin nhắn chính
+# ==============================
 def handle_chat_message(user_message):
     products = get_all_products()
-    msg = normalize_text(user_message)
+    if not products:
+        return {"reply": "Không có dữ liệu sản phẩm.", "history": []}
+
+    msg = normalize(user_message)
+    history = session.get("chat_history", [])
     reply = None
 
-    # So sánh 2 sản phẩm
-    match = re.findall(r"so sanh (.+?) (?:va|vs|voi|với) (.+)", msg)
-    if match:
-        n1, n2 = match[0]
-        reply = compare_products(n1, n2, products)
-
-    # Tìm sản phẩm cụ thể
-    if not reply:
+    # So sánh
+    if m := re.findall(r"so sanh (.+?) (?:va|vs|voi|với) (.+)", msg):
+        reply = compare_products(m[0][0], m[0][1], products)
+    # Trường hợp đặc biệt (đắt, rẻ, pin…)
+    elif special := find_special_case(user_message, products):
+        reply = special
+    # Giá cụ thể
+    elif re.search(r"(gia|bao nhieu|tien|gia ban)", msg):
         p = find_product(user_message, products)
         if p:
-            if any(w in msg for w in ["gia", "bao nhieu", "mấy tien", "mấy tiền"]):
-                reply = f"{p['name']} có giá {int(p['price']):,}đ."
-            elif "pin" in msg:
-                reply = f"{p['name']} có dung lượng pin {p['battery']} mAh."
-            elif any(w in msg for w in ["manh", "hieu nang"]):
-                reply = f"{p['name']} đạt {p['performance_score']} điểm hiệu năng."
-            elif any(w in msg for w in ["ra mat", "nam", "moi nhat", "mới nhất"]):
-                reply = f"{p['name']} ra mắt năm {p['release_year']}."
+            reply = f"{p['name']} có giá {int(p['price']):,}đ."
+        else:
+            brand = extract_brand(msg, products)
+            if brand:
+                reply = find_special_case(f"re nhat {brand}", products)
             else:
-                reply = (
-                    f"{p['name']} — {p['price']:,}đ | {p['battery']}mAh | "
-                    f"{p['chipset']} | RAM {p['ram']} | Điểm {p['performance_score']}"
-                )
+                reply = "Không rõ sản phẩm bạn hỏi."
+    # Năm ra mắt
+    elif re.search(r"(ra mat|nam nao|năm nào)", msg):
+        p = find_product(user_message, products)
+        reply = f"{p['name']} ra mắt năm {p['release_year']}." if p else "Không rõ sản phẩm bạn hỏi."
+    # Thông tin chung
+    else:
+        p = find_product(user_message, products)
+        reply = (
+            f"{p['name']} giá {int(p['price']):,}đ, chip {p['chipset']}, RAM {p['ram']}, pin {p['battery']}mAh, hiệu năng {p['performance_score']} điểm."
+            if p else "Xin lỗi, tôi chưa hiểu sản phẩm bạn nói đến."
+        )
 
-    # Trường hợp đặc biệt
-    if not reply:
-        if any(x in msg for x in ["re nhat", "rẻ nhất"]):
-            p = min(products, key=lambda x: x["price"])
-            reply = f"{p['name']} là sản phẩm rẻ nhất: {p['price']:,}đ."
-        elif any(x in msg for x in ["dat nhat", "đắt nhất"]):
-            p = max(products, key=lambda x: x["price"])
-            reply = f"{p['name']} là sản phẩm đắt nhất: {p['price']:,}đ."
-        elif "pin" in msg and any(x in msg for x in ["tot nhat", "trau nhat", "lâu nhất"]):
-            p = max(products, key=lambda x: x["battery"])
-            reply = f"{p['name']} có pin trâu nhất: {p['battery']}mAh."
-        elif "moi nhat" in msg or "mới nhất" in msg:
-            p = max(products, key=lambda x: x["release_year"])
-            reply = f"{p['name']} là mẫu mới nhất, ra mắt năm {p['release_year']}."
-
-    if not reply:
-        reply = "Xin lỗi, tôi chưa hiểu câu hỏi của bạn."
-
-    return reply
+    history.append({"user": user_message, "bot": reply})
+    session["chat_history"] = history
+    return {"reply": reply, "history": history}

@@ -80,20 +80,6 @@ td {
   margin: 20px 0 30px;
 }
 
-/* 💳 FORM THANH TOÁN */
-.payment-form {
-  text-align: left;
-  margin-top: 20px;
-  padding: 15px 30px;
-}
-.payment-option {
-  display: block;
-  font-size: 16px;
-  margin: 10px 0;
-  color: #333;
-  cursor: pointer;
-}
-
 /* ✅ NÚT XÁC NHẬN */
 .confirm-btn {
   display: block;

@@ -28,13 +28,9 @@ body {
   line-height: 1.6;
 }
 
-.btn-area {
-  margin-top: 25px;
-}
-
 .btn {
   display: inline-block;
-  margin: 8px;
+  margin-top: 25px;
   padding: 10px 25px;
   background: #1e88e5;
   color: white;

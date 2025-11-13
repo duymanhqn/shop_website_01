@@ -60,34 +60,20 @@ class CartItem(db.Model):
 
 
 # Đơn hàng
-
 class Order(db.Model):
     __tablename__ = "orders"
 
-    id = db.Column(db.Integer, primary_key=True)
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)  #
     user_id = db.Column(db.Integer, db.ForeignKey("user.id"), nullable=False)
-
-    # Tổng tiền đơn hàng (VND)
     total_amount = db.Column(db.Numeric(15, 0), nullable=False)
-
-    # Phương thức thanh toán: "Bank" hoặc "COD"
     payment_method = db.Column(db.String(50), default="Bank")
-
-    # Trạng thái đơn hàng
-    # Các giá trị có thể: "Chờ thanh toán", "Đã thanh toán", "Đang xử lý", "Hoàn tất", "Hủy"
     status = db.Column(db.String(50), default="Chờ thanh toán")
-
-    # Thông tin thanh toán qua ngân hàng (nếu có)
-    bank_name = db.Column(db.String(100))           
-    bank_account = db.Column(db.String(50))         
-    bank_account_name = db.Column(db.String(100))   
-    transfer_note = db.Column(db.String(255))       
-
-    # Thời gian thanh toán và tạo đơn
+    bank_name = db.Column(db.String(100))
+    bank_account = db.Column(db.String(50))
+    bank_account_name = db.Column(db.String(100))
+    transfer_note = db.Column(db.String(255))
     paid_at = db.Column(db.DateTime, nullable=True)
     created_at = db.Column(db.DateTime, default=datetime.now)
-
-    # Liên kết ngược tới người dùng
     user = db.relationship("User", backref="orders", lazy=True)
 
 class Admin(db.Model):

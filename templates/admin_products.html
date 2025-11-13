@@ -69,14 +69,27 @@
         {% endif %}
     </div>
         <h3>Thêm sản phẩm mới</h3>
-<form method="POST" enctype="multipart/form-data" action="{{ url_for('admin_bp.add_product') }}">
+<form method="POST" enctype="multipart/form-data" action="{{ url_for('admin_bp.add_product') }}" class="add-form">
+
     <input type="text" name="name" placeholder="Tên sản phẩm" required>
     <input type="number" name="price" placeholder="Giá" required>
     <input type="file" name="image_file" accept="image/*" required>
+
     <input type="text" name="description" placeholder="Mô tả">
     <input type="text" name="category" placeholder="Loại">
-    <button type="submit">Thêm</button>
+    <input type="text" name="brand" placeholder="Thương hiệu">
+    <input type="text" name="chipset" placeholder="Chipset">
+    <input type="text" name="ram" placeholder="RAM (ví dụ: 8GB)">
+    <input type="text" name="storage" placeholder="Bộ nhớ (ví dụ: 256GB)">
+    <input type="number" name="battery" placeholder="Dung lượng pin (mAh)">
+    <input type="number" step="0.1" name="screen_size" placeholder="Kích thước màn hình (inch)">
+    <input type="number" step="0.1" name="weight" placeholder="Trọng lượng (gram)">
+    <input type="number" step="0.1" name="performance_score" placeholder="Điểm hiệu năng">
+    <input type="number" name="release_year" placeholder="Năm ra mắt">
+
+    <button type="submit" class="btn-add">Thêm sản phẩm</button>
 </form>
+
 
     </div>
 </div>
