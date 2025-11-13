@@ -103,9 +103,6 @@ CORS(app)
 # Gắn Flask app vào SQLAlchemy
 db.init_app(app)
 
-# Tạo bảng nếu chưa có
-with app.app_context():
-    db.create_all()
 
 # =============================
 #  Đăng ký các Blueprint
