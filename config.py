@@ -4,16 +4,10 @@
 
 #     #  Tắt track modification để tránh warning
 #     SQLALCHEMY_TRACK_MODIFICATIONS = False
-import os
-
 class Config:
-    if os.environ.get("RENDER_DB"):
-        SQLALCHEMY_DATABASE_URI = (
-            "postgresql://shop:EbwomBvht9ZjpqrnCbmjKbLz2udlK0EN@"
-            "dpg-d46sdpk9c44c738n5aj0-a.render.com:5432/shop_db_ak4d"
-            "?sslmode=require"
-        )
-    else:
-        SQLALCHEMY_DATABASE_URI = "postgresql://postgres:123456@localhost:5432/shop_db"
-
+    SQLALCHEMY_DATABASE_URI = (
+        "postgresql://shop:EbwomBvht9ZjpqrnCbmjKbLz2udlK0EN@"
+        "dpg-d46sdpk9c44c738n5aj0-a.shop_db_ak4d.render.com:5432/shop_db_ak4d"
+        "?sslmode=require"
+    )
     SQLALCHEMY_TRACK_MODIFICATIONS = False
