@@ -67,8 +67,8 @@ class OrderController:
             orderInfo = "Thanh toán đơn hàng qua MoMo"
 
             # Chỉnh đúng URL: ipnUrl khác redirectUrl
-            redirectUrl = "https://unboasting-skylar-nonsimilarly.ngrok-free.dev/order/momo_return"
-            ipnUrl = "https://unboasting-skylar-nonsimilarly.ngrok-free.dev/order/momo_ipn"
+            redirectUrl = "https://htmthshop.onrender.com/order/momo_return"
+            ipnUrl = "https://htmthshop.onrender.com/order/momo_ipn"
 
             amount = str(int(total_price))
             orderId = datetime.now().strftime("%Y%m%d%H%M%S")
