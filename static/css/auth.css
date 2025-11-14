@@ -211,3 +211,16 @@ input {
   80% { opacity: 1; }
   100% { opacity: 0; display: none; }
 }
+
+.forgot-password-link {
+    display: block;
+    margin-bottom: 10px;
+    text-align: left;
+    color: #4e73df;
+    text-decoration: none;
+    font-size: 14px;
+}
+
+.forgot-password-link:hover {
+    text-decoration: underline;
+}

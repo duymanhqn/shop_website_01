@@ -4,6 +4,8 @@
 
 #     #  Tắt track modification để tránh warning
 #     SQLALCHEMY_TRACK_MODIFICATIONS = False
+
+
 import os
 
 class Config:
