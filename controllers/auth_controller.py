@@ -1,10 +1,8 @@
 from flask import render_template, request, redirect, url_for, flash, session
-# from werkzeug.security import generate_password_hash, check_password_hash
 from models.models import db, User
 from utils.otp_helper import generate_or_update_otp, verify_otp
 from utils.send_email import send_otp_email
 import random
-
 
 class AuthController:
 
@@ -59,7 +57,7 @@ class AuthController:
             gmail=pending["gmail"],
             username=pending["username"],
             password=pending["password"],
-            # password=generate_password_hash(pending["password"]),
+         
         )
 
         db.session.add(user)
@@ -94,28 +92,22 @@ class AuthController:
         )
 
 
-    #  LOGIN
-   
-    # @staticmethod
-    # def login(username, password):
-    #     user = User.query.filter_by(username=username).first()
+    
+    
 
-    #     if not user or not check_password_hash(user.password, password):
-    #         flash("Sai tài khoản hoặc mật khẩu!", "error")
-    #         return redirect(url_for("auth_bp.auth"))
-
-    #     session["user_id"] = user.id
-    #     return redirect(url_for("home_bp.home"))
     @staticmethod
     def login(username, password):
         user = User.query.filter_by(username=username).first()
 
-        if not user or user.password != password:   # So sánh trực tiếp
+        
+        if user and user.password == password:
+            session["user_id"] = user.id
+            session["user_name"] = user.fullname or user.username  #
+            flash("Đăng nhập thành công!", "success")
+            return redirect(url_for("home_bp.home"))
+        else:
             flash("Sai tài khoản hoặc mật khẩu!", "error")
             return redirect(url_for("auth_bp.auth"))
-
-        session["user_id"] = user.id
-        return redirect(url_for("home_bp.home"))
     #  LOGOUT
    
     @staticmethod
@@ -192,11 +184,19 @@ class AuthController:
             return redirect(url_for("auth_bp.forgot_password"))
 
         new_pass = request.form.get("password")
+        if not new_pass or len(new_pass) < 6:
+            flash("Mật khẩu phải có ít nhất 6 ký tự!", "error")
+            return render_template("reset_password.html")
+
         user = User.query.filter_by(gmail=gmail).first()
+        if not user:
+            flash("Tài khoản không tồn tại!", "error")
+            return redirect(url_for("auth_bp.forgot_password"))
 
-        user.password = generate_password_hash(new_pass)
+        # LƯU MẬT KHẨU DẠNG THÔ (PLAIN TEXT) – KHÔNG MÃ HÓA
+        user.password = new_pass
+
         db.session.commit()
-
         session.pop("reset_gmail", None)
 
         flash("Đổi mật khẩu thành công!", "success")

@@ -34,7 +34,7 @@ resend.api_key = os.getenv("RESEND_API_KEY")
 
 def _send(email, otp):
     params = {
-        "from": "OTP Service <onboarding@resend.dev>",
+        "from": "OTP Service <no-reply@mhtmh.id.vn>",
         "to": [email],
         "subject": "Mã OTP Xác Nhận",
         "text": f"OTP của bạn là: {otp}\nOTP có hiệu lực trong 5 phút.",

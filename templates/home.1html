@@ -8,17 +8,16 @@
       href="{{ url_for('static', filename='css/home.css') }}"
     />
   </head>
+
   <body>
-    <!-- 🧭 Navbar -->
+    <!-- Navbar -->
     <nav>
       <div class="logo">MHTHM</div>
       <div class="menu">
         <a href="/">Trang chủ</a>
         <a href="{{ url_for('product_info_bp.product_info') }}">Sản phẩm</a>
-
         <a href="#">Khuyến mãi</a>
         <a href="{{ url_for('contact_bp.contact') }}">Liên hệ</a>
-
       </div>
       <div class="cart">
         <a
@@ -57,8 +56,8 @@
     {% if search_results is not none %}
     <section class="category" id="searchResults">
       <h2>
-        🔎 {% if keyword %} Kết quả tìm kiếm cho "{{ keyword }}" {% else %} Kết
-        quả tìm kiếm {% endif %}
+        {% if keyword %} Kết quả tìm kiếm cho "{{ keyword }}" {% else %} Kết quả
+        tìm kiếm {% endif %}
       </h2>
       <div class="scroll-x" id="productsContainer">
         {% if search_results %} {% for p in search_results %}
@@ -79,16 +78,13 @@
           >
         </div>
         {% endfor %} {% else %}
-        <p class="no-result">❌ Không tìm thấy sản phẩm phù hợp.</p>
+        <p class="no-result">Không tìm thấy sản phẩm phù hợp.</p>
         {% endif %}
       </div>
     </section>
-    {% endif %}
-
-    <!-- 📱 iPhone -->
-    {% if search_results is none %}
+    {% endif %} {% if search_results is none %}
     <section class="category" id="iphoneSection">
-      <h2>📱 iPhone</h2>
+      <h2>iPhone</h2>
       <div class="scroll-x">
         {% for p in iphones %}
         <div
@@ -113,9 +109,8 @@
       </div>
     </section>
 
-    <!-- 📱 Samsung -->
     <section class="category" id="samsungSection">
-      <h2>📱 Samsung</h2>
+      <h2>Samsung</h2>
       <div class="scroll-x">
         {% for p in samsungs %}
         <div
@@ -142,9 +137,8 @@
       </div>
     </section>
 
-    <!-- 💻 Laptop -->
     <section class="category" id="laptopSection">
-      <h2>💻 Laptop</h2>
+      <h2>Laptop</h2>
       <div class="scroll-x">
         {% for p in laptops %}
         <div
@@ -169,60 +163,63 @@
       </div>
     </section>
     {% endif %}
-  
-<!-- 🤖 Nút bật chatbot -->
-<div id="chatbot-toggle" onclick="toggleChat()">
-  <img src="{{ url_for('static', filename='images/ai.png') }}" alt="Chatbot Icon" />
-</div>
 
+    <!--  Chat -->
+    <div id="chat-bubble" class="chat-bubble">
+      <img
+        src="{{ url_for('static', filename='images/ai.png') }}"
+        alt="Chatbot"
+        style="width: 45px; height: 45px"
+      />
+    </div>
 
-<!-- 💬 Hộp chat -->
-<div id="chat-box">
-  <div id="chat-header">
-    <span>Hỗ trợ MHTMH</span>
-    <button id="close-chat" onclick="toggleChat()">×</button>
-  </div>
+    <div id="chat-box" class="chat-box hidden">
+      <div class="chat-header">Trợ lý MHTHM</div>
+      <div class="chat-messages" id="chat-messages">
+        <p>Xin chào! Tôi có thể giúp gì cho bạn hôm nay?</p>
+      </div>
+      <form class="chat-input">
+        <input
+          type="text"
+          name="message"
+          placeholder="Nhập tin nhắn..."
+          required
+        />
+        <button type="submit">Gửi</button>
+      </form>
+    </div>
 
-  <div id="chat-messages"></div>
+    <script>
+      // Đóng , mở khung chat
+      const bubble = document.getElementById("chat-bubble");
+      const box = document.getElementById("chat-box");
+      bubble.addEventListener("click", () => {
+        box.classList.toggle("hidden");
+      });
 
-  <div id="chat-input-container">
-    <input id="chat-input" type="text" placeholder="Nhập câu hỏi của bạn..." />
-    <button id="chat-send" onclick="sendMessage()">Gửi</button>
-  </div>
-</div>
+      // Gửi tin nhắn không reload
+      const form = document.querySelector(".chat-input");
+      const input = form.querySelector("input[name='message']");
+      const messagesDiv = document.getElementById("chat-messages");
 
-<script>
-  const chatBox = document.getElementById("chat-box");
+      form.addEventListener("submit", async (e) => {
+        e.preventDefault();
+        const msg = input.value.trim();
+        if (!msg) return;
 
-  function toggleChat() {
-    chatBox.classList.toggle("active");
-  }
+        messagesDiv.innerHTML += `<p><b>Bạn:</b> ${msg}</p>`;
+        input.value = "";
 
-  async function sendMessage() {
-    const input = document.getElementById("chat-input");
-    const msg = input.value.trim();
-    if (!msg) return;
+        const res = await fetch("/chat", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ message: msg }),
+        });
 
-    const div = document.getElementById("chat-messages");
-    div.innerHTML += `<div class="msg user"><b>Bạn:</b> ${msg}</div>`;
-    input.value = "";
-    div.scrollTop = div.scrollHeight;
-
-    const res = await fetch("/chat", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ message: msg }),
-    });
-
-    const data = await res.json();
-    div.innerHTML += `<div class="msg ai"><b>AI:</b> ${data.reply}</div>`;
-    div.scrollTop = div.scrollHeight;
-  }
-
-  document.getElementById("chat-input").addEventListener("keypress", (e) => {
-    if (e.key === "Enter") sendMessage();
-  });
-</script>
-
+        const data = await res.json();
+        messagesDiv.innerHTML += `<p><b>Bot:</b> ${data.reply}</p>`;
+        messagesDiv.scrollTop = messagesDiv.scrollHeight;
+      });
+    </script>
   </body>
 </html>
