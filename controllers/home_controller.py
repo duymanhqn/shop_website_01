@@ -1,18 +1,16 @@
 from flask import render_template
 from models.models import Product
-import requests
+from rapidfuzz import fuzz
 
 
 class HomeController:
-    #  Hiển thị trang chủ
+    # Hiển thị trang chủ
     @staticmethod
     def show_home():
-        
-        iphones = Product.query.filter(Product.category.ilike('iphone')).all()
-        samsungs = Product.query.filter(Product.category.ilike('samsung')).all()
-        laptops = Product.query.filter(Product.category.ilike('laptop')).all()
+        iphones = Product.query.filter(Product.category.ilike('%iphone%')).all()
+        samsungs = Product.query.filter(Product.category.ilike('%samsung%')).all()
+        laptops = Product.query.filter(Product.category.ilike('%laptop%')).all()
 
-        
         return render_template(
             "home.html",
             iphones=iphones,
@@ -22,34 +20,32 @@ class HomeController:
             keyword=None
         )
 
-    # Tìm kiếm sản phẩm bằng AI
+    # Tìm kiếm sản phẩm
     @staticmethod
     def search_products(keyword):
-        if not keyword:
+        if not keyword or not keyword.strip():
             return HomeController.show_home()
 
-        try:
-            
-            response = requests.get(
-                "http://127.0.0.1:5000/ai/search_products",
-                params={"keyword": keyword},
-                timeout=3
-            )
-            data = response.json()
+        keyword = keyword.strip()
+        keyword_lower = keyword.lower()
+        matched_products = []
 
-            if "results" in data and data["results"]:
-                matched_products = data["results"]
-            else:
-                matched_products = []
-        except Exception as e:
-            print("❌ Lỗi AI search:", e)
-            matched_products = []
+        # Lấy tất cả sản phẩm (có thể tối ưu bằng DB query sau)
+        all_products = Product.query.all()
 
-        # Trả dữ liệu cho giao diện
+        for p in all_products:
+            name_lower = p.name.lower()
+            # Tìm chính xác hoặc tương đồng >= 70%
+            if (keyword_lower in name_lower) or (fuzz.partial_ratio(keyword_lower, name_lower) >= 70):
+                matched_products.append(p)
+
+        # Xác định keyword hiển thị: có kết quả → ẩn, không có → hiện để người dùng biết
+        display_keyword = keyword if not matched_products else ""
+
         return render_template(
             "home.html",
-            search_results=matched_products,
-            keyword=keyword,
+            search_results=matched_products or None,  # None để ẩn section danh mục
+            keyword=display_keyword,
             iphones=[],
             samsungs=[],
             laptops=[]
