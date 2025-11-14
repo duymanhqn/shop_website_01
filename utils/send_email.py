@@ -18,27 +18,34 @@
 
 # def send_otp_email(email, otp):
 #     Thread(target=_send, args=(email, otp)).start()
-from threading import Thread
+# from threading import Thread
+
+
+import os
+from dotenv import load_dotenv
 import resend
+from threading import Thread
 
-# API key để trực tiếp trong code (bạn yêu cầu như vậy)
-resend.api_key = "re_5w9mHaod_KwdbayCgcRgSbAXHBdx8ScDp"
+# Load ENV
+load_dotenv()
 
+# Lấy API KEY
+resend.api_key = os.getenv("RESEND_API_KEY")
 
 def _send(email, otp):
     params = {
         "from": "OTP Service <onboarding@resend.dev>",
-        "to": email,
+        "to": [email],
         "subject": "Mã OTP Xác Nhận",
-        "text": f"OTP của bạn là: {otp}\nHiệu lực 5 phút.",
+        "text": f"OTP của bạn là: {otp}\nOTP có hiệu lực trong 5 phút.",
     }
 
     try:
         resend.Emails.send(params)
+        print("Đã gửi OTP đến:", email)
     except Exception as e:
-        print("Lỗi gửi email:", e)
+        print("Lỗi gửi email Resend:", e)
 
 
 def send_otp_email(email, otp):
-    # Gửi email trong thread để không làm chậm request
     Thread(target=_send, args=(email, otp)).start()
