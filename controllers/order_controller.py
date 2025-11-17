@@ -1,12 +1,14 @@
 
 from flask import render_template, session, redirect, url_for, flash, request, jsonify
 from datetime import datetime
-from models.models import db, CartItem, Product, Order
-from utils.payment_helper import get_callback_url  # ← IMPORT HELPER
+from models.models import db, CartItem, Product, Order, User
+from utils.payment_helper import get_callback_url
+from utils.send_email import send_order_email
 import hmac, hashlib, requests
 
 
 class OrderController:
+
     # Trang thanh toán (hiển thị giỏ hàng)
     @staticmethod
     def checkout():
@@ -43,7 +45,10 @@ class OrderController:
         total_price = sum(Product.query.get(i.product_id).price * i.quantity for i in cart_items)
 
         # Nếu thanh toán COD
+    
         if payment_method == "COD":
+
+            # Tạo đơn hàng
             new_order = Order(
                 user_id=user_id,
                 total_amount=total_price,
@@ -52,9 +57,26 @@ class OrderController:
                 created_at=datetime.now(),
             )
             db.session.add(new_order)
+
+            # Lấy danh sách sản phẩm để gửi mail
+            items = []
+            for i in cart_items:
+                p = Product.query.get(i.product_id)
+                items.append({
+                    "name": p.name,
+                    "quantity": i.quantity,
+                    "price": p.price
+                })
+
+            # XÓA GIỎ HÀNG
             for item in cart_items:
                 db.session.delete(item)
+
             db.session.commit()
+
+            # Gửi email cho COD
+            user = User.query.get(user_id)
+            send_order_email(user.gmail, items, total_price)
 
             flash("Đặt hàng thành công (Thanh toán khi nhận hàng).", "success")
             return redirect(url_for("order_bp.success"))
@@ -67,11 +89,9 @@ class OrderController:
             secretKey = "K951B6PE1waDMi640xX08PD3vg6EkVlz"
             orderInfo = "Thanh toán đơn hàng qua MoMo"
 
-            # Trong confirm_order()
-            redirectUrl = get_callback_url('order_bp.momo_return')  
-            ipnUrl = get_callback_url('order_bp.momo_ipn')    
-            
-                  
+            redirectUrl = get_callback_url('order_bp.momo_return')
+            ipnUrl = get_callback_url('order_bp.momo_ipn')
+
             amount = str(int(total_price))
             orderId = datetime.now().strftime("%Y%m%d%H%M%S")
             requestId = orderId
@@ -122,7 +142,6 @@ class OrderController:
 
         if resultCode == "0":
             print(f"IPN: Thanh toán thành công cho order {orderId}")
-            # Có thể thêm logic lưu log, gửi email xác nhận
         else:
             print(f"IPN: Thanh toán thất bại {orderId}")
 
@@ -162,25 +181,43 @@ class OrderController:
             db.session.add(order)
             db.session.flush()  # Lấy order.id
 
+
             # Xóa giỏ hàng
             for item in cart_items:
                 db.session.delete(item)
 
             db.session.commit()
 
-            # Đánh dấu đã xử lý
+
+            # ==========================
+            # GỬI EMAIL XÁC NHẬN ĐƠN HÀNG
+            # ==========================
+            user = User.query.get(user_id)
+
+            items = []
+            for i in cart_items:
+                p = Product.query.get(i.product_id)
+                items.append({
+                    "name": p.name,
+                    "quantity": i.quantity,
+                    "price": p.price
+                })
+
+            send_order_email(user.gmail, items, total_price)
+
+
             session["momo_order_id"] = orderId
             session["last_order_id"] = order.id
 
             flash("Thanh toán MoMo thành công!", "success")
             return redirect(url_for("order_bp.success"))
+
         else:
             flash("Thanh toán thất bại hoặc bị hủy.", "error")
             return redirect(url_for("cart_bp.cart"))
 
     @staticmethod
     def success():
-        # Reset flag
         session.pop("momo_order_id", None)
         session.pop("momo_paid", None)
 

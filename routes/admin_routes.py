@@ -38,7 +38,7 @@ def products():
 @admin_bp.route("/products/add", methods=["POST"])
 def add_product():
     AdminController.handle_add_product(request)
-    flash("✅ Đã thêm sản phẩm mới!", "success")
+    flash(" Đã thêm sản phẩm mới!", "success")
     return redirect(url_for("admin_bp.products"))
 
 
@@ -46,7 +46,7 @@ def add_product():
 def edit_product(pid):
     product = AdminController.get_product_by_id(pid)
     if not product:
-        flash("❌ Không tìm thấy sản phẩm!", "danger")
+        flash("Không tìm thấy sản phẩm!", "danger")
         return redirect(url_for("admin_bp.products"))
     return render_template("admin_edit_product.html", product=product)
 
@@ -54,14 +54,14 @@ def edit_product(pid):
 @admin_bp.route("/products/update/<int:pid>", methods=["POST"])
 def update_product(pid):
     AdminController.handle_update_product(request, pid)
-    flash("✅ Đã cập nhật sản phẩm!", "info")
+    flash(" Đã cập nhật sản phẩm!", "info")
     return redirect(url_for("admin_bp.products"))
 
 
 @admin_bp.route("/products/delete/<int:pid>")
 def delete_product(pid):
     AdminController.delete_product(pid)
-    flash("⚠️ Đã xóa sản phẩm!", "warning")
+    flash(" Đã xóa sản phẩm!", "warning")
     return redirect(url_for("admin_bp.products"))
 
 
@@ -79,7 +79,7 @@ def confirm_order(order_id):
     if "admin_id" not in session:
         return redirect(url_for("admin_bp.login"))
     if AdminController.confirm_payment(order_id):
-        flash("✅ Đã xác nhận thanh toán đơn hàng!", "success")
+        flash(" Đã xác nhận thanh toán đơn hàng!", "success")
     else:
-        flash("⚠️ Không thể xác nhận!", "warning")
+        flash(" Không thể xác nhận!", "warning")
     return redirect(url_for("admin_bp.orders"))

@@ -15,7 +15,7 @@ class AdminController:
             session["admin_id"] = admin.id
             session["admin_name"] = admin.fullnamead
             return redirect(url_for("admin_bp.dashboard"))
-        flash("❌ Sai tài khoản hoặc mật khẩu!", "error")
+        flash(" Sai tài khoản hoặc mật khẩu!", "error")
         return redirect(url_for("admin_bp.login"))
 
     @staticmethod

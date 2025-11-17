@@ -6,9 +6,8 @@ from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
 from functools import lru_cache
 
-# ==============================
-# 1️⃣ Mapping thương hiệu
-# ==============================
+# Mapping thương hiệu
+
 BRAND_MAP = {
     "iphone": ["ip", "ifone", "ai phôn", "ai phone"],
     "samsung": ["glx", "galaxy", "sam sung"],
@@ -17,9 +16,9 @@ BRAND_MAP = {
     "laptop": ["lap", "latop", "may tinh xach tay"]
 }
 
-# ==============================
-# 2️⃣ Cache sản phẩm
-# ==============================
+
+#  Cache sản phẩm
+
 @lru_cache(maxsize=1)
 def get_all_products():
     products = Product.query.all()
@@ -44,9 +43,9 @@ def get_all_products():
         for p in products
     ]
 
-# ==============================
+
 # 3️⃣ Chuẩn hóa text
-# ==============================
+
 def normalize(text: str):
     if not text:
         return ""
@@ -58,9 +57,9 @@ def normalize(text: str):
             t = t.replace(v, k)
     return re.sub(r"\s+", " ", t).strip()
 
-# ==============================
-# 4️⃣ Nhận diện thương hiệu
-# ==============================
+
+#  Nhận diện thương hiệu
+
 def extract_brand(msg, products):
     msg = normalize(msg)
     brands = {p["brand"] for p in products if p.get("brand")}
@@ -72,9 +71,8 @@ def extract_brand(msg, products):
             return b
     return None
 
-# ==============================
-# 5️⃣ Tìm sản phẩm thông minh (TF-IDF + fuzzy)
-# ==============================
+#  Tìm sản phẩm thông minh (TF-IDF + fuzzy)
+
 def find_product(user_msg, products):
     msg = normalize(user_msg)
     if not msg:
@@ -97,9 +95,9 @@ def find_product(user_msg, products):
     )
     return products[best[0]] if best[1] > 0.25 else None
 
-# ==============================
-# 6️⃣ Xử lý đặc biệt (đắt/rẻ/pin/hiệu năng…)
-# ==============================
+
+# Xử lý đặc biệt (đắt/rẻ/pin/hiệu năng…)
+
 def find_special_case(msg, products):
     msg = normalize(msg)
     brand = extract_brand(msg, products)
@@ -133,9 +131,7 @@ def find_special_case(msg, products):
 
     return None
 
-# ==============================
-# 7️⃣ So sánh 2 sản phẩm
-# ==============================
+# So sánh 2 sản phẩm
 def compare_products(n1, n2, products):
     p1, p2 = find_product(n1, products), find_product(n2, products)
     if not p1 or not p2:

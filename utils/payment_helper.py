@@ -37,4 +37,4 @@ def get_callback_url(endpoint):
         scheme = 'https'
 
     base_url = f"{scheme}://{host}"
-    return urljoin(base_url + '/', url_for(endpoint))  # ← endpoint = 'order_bp.momo_return'
+    return urljoin(base_url + '/', url_for(endpoint)) 

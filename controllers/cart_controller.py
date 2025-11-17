@@ -4,9 +4,9 @@ from models.models import db, CartItem, Product
 
 class CartController:
 
-    # =========================================
+
     # HIỂN THỊ GIỎ HÀNG
-    # =========================================
+    
     @staticmethod
     def show_cart():
         if "user_id" not in session:
@@ -28,9 +28,9 @@ class CartController:
 
         return render_template("cart.html", cart_items=cart_items, total=total)
 
-    # =========================================
+
     # THÊM SẢN PHẨM VÀO GIỎ HÀNG
-    # =========================================
+
     @staticmethod
     def add_to_cart(user_id, product_id, quantity=1):
         product = Product.query.get(product_id)
@@ -58,9 +58,9 @@ class CartController:
         flash("Đã thêm vào giỏ hàng!", "success")
         return redirect(url_for("cart_bp.cart"))
 
-    # =========================================
+ 
     # CẬP NHẬT SỐ LƯỢNG (TRUYỀN THỐNG - RELOAD)
-    # =========================================
+
     @staticmethod
     def update_quantity(product_id, action):
         if "user_id" not in session:
@@ -84,9 +84,9 @@ class CartController:
 
         return redirect(url_for("cart_bp.cart"))
 
-    # =========================================
+    
     # XÓA SẢN PHẨM KHỎI GIỎ HÀNG
-    # =========================================
+    
     @staticmethod
     def delete_item(product_id):
         if "user_id" not in session:
@@ -101,9 +101,7 @@ class CartController:
 
         return redirect(url_for("cart_bp.cart"))
 
-    # =========================================
     # CẬP NHẬT SỐ LƯỢNG QUA AJAX (KHÔNG RELOAD)
-    # =========================================
     @staticmethod
     def update_quantity_ajax(product_id, action):
         if "user_id" not in session:

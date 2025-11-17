@@ -1,24 +1,3 @@
-# import smtplib
-# from threading import Thread
-# from email.mime.text import MIMEText
-
-# SENDER_EMAIL = "doanthanhtuyen0330@gmail.com"
-# SENDER_APP_PASSWORD = "qykm zzuf lofo aumf"
-
-# def _send(email, otp):
-#     msg = MIMEText(f"OTP của bạn: {otp}\nHiệu lực 5 phút.", "plain", "utf-8")
-#     msg["Subject"] = "Xác nhận OTP"
-#     msg["From"] = SENDER_EMAIL
-#     msg["To"] = email
-
-#     server = smtplib.SMTP_SSL("smtp.gmail.com", 465)
-#     server.login(SENDER_EMAIL, SENDER_APP_PASSWORD)
-#     server.send_message(msg)
-#     server.quit()
-
-# def send_otp_email(email, otp):
-#     Thread(target=_send, args=(email, otp)).start()
-# from threading import Thread
 
 
 import os
@@ -49,3 +28,50 @@ def _send(email, otp):
 
 def send_otp_email(email, otp):
     Thread(target=_send, args=(email, otp)).start()
+
+
+    # send gmail oder
+def _send_order(email, items, total_price):
+    rows = ""
+    for item in items:
+        rows += f"""
+        <tr>
+            <td>{item['name']}</td>
+            <td>{item['quantity']}</td>
+            <td>{item['price']:,} VND</td>
+        </tr>
+        """
+
+    html = f"""
+    <h2 style='color:#4CAF50;'> Đặt hàng thành công!</h2>
+    <p>Cảm ơn bạn đã mua hàng. Đây là chi tiết đơn hàng:</p>
+
+    <table border="1" cellpadding="8" cellspacing="0" style="border-collapse: collapse;">
+        <tr style="background:#f2f2f2;">
+            <th>Sản phẩm</th>
+            <th>Số lượng</th>
+            <th>Giá</th>
+        </tr>
+        {rows}
+    </table>
+
+    <p><b>Tổng tiền: {total_price:,} VND</b></p>
+    <p>Chúc bạn một ngày tốt lành </p>
+    """
+
+    params = {
+        "from": "MHTMHshop <no-reply@mhtmh.id.vn>",
+        "to": [email],
+        "subject": "Xác nhận đặt hàng thành công",
+        "html": html,
+    }
+
+    try:
+        resend.Emails.send(params)
+        print("Đã gửi email đơn hàng đến:", email)
+    except Exception as e:
+        print("Lỗi gửi email đơn hàng:", e)
+
+
+def send_order_email(email, items, total_price):
+    Thread(target=_send_order, args=(email, items, total_price)).start()

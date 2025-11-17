@@ -7,6 +7,7 @@ class ProductController:
         product = Product.query.get_or_404(id)
         return render_template("product_detail.html", product=product)
 
+
     @staticmethod
     def add_to_cart(id):
         #  chưa đăng nhập
