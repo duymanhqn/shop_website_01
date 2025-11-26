@@ -43,9 +43,9 @@
                 <td>{{ p.description }}</td>
                 <td>{{ p.category }}</td>
                 <td>
-                    <a href="{{ url_for('admin_bp.edit_product', pid=p.id) }}">✏️ Sửa</a> |
+                    <a href="{{ url_for('admin_bp.edit_product', pid=p.id) }}"> Sửa</a> |
                     <a href="{{ url_for('admin_bp.delete_product', pid=p.id) }}"
-                       onclick="return confirm('Xóa sản phẩm này?')">🗑️ Xóa</a>
+                       onclick="return confirm('Xóa sản phẩm này?')"> Xóa</a>
                 </td>
             </tr>
             {% endfor %}

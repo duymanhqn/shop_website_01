@@ -9,7 +9,7 @@
     />
   </head>
   <body>
-    <!-- 🧭 Navbar -->
+    <!--  Navbar -->
     <nav>
       <div class="logo">MHTHM</div>
       <div class="menu">
@@ -24,23 +24,23 @@
         <a
           href="{{ url_for('cart_bp.cart') }}"
           style="text-decoration: none; color: white"
-          >🛒 Giỏ hàng</a
+          > Giỏ hàng</a
         >
       </div>
 
       {% if session.get('user_name') %}
       <div class="user-info">
-        👤 {{ session['user_name'] }}
+         {{ session['user_name'] }}
         <a href="{{ url_for('auth_bp.logout') }}" class="logout-btn"
           >Đăng xuất</a
         >
       </div>
       {% else %}
-      <a href="{{ url_for('auth_bp.auth') }}" class="login-btn">🔐 Đăng nhập</a>
+      <a href="{{ url_for('auth_bp.auth') }}" class="login-btn"> Đăng nhập</a>
       {% endif %}
     </nav>
 
-    <!-- 🔎 Search -->
+    <!--  Search -->
     <section class="search-section">
       <form action="{{ url_for('home_bp.search') }}" method="get">
         <input
@@ -57,7 +57,7 @@
     {% if search_results is not none %}
     <section class="category" id="searchResults">
       <h2>
-        🔎 {% if keyword %} Kết quả tìm kiếm cho "{{ keyword }}" {% else %} Kết
+         {% if keyword %} Kết quả tìm kiếm cho "{{ keyword }}" {% else %} Kết
         quả tìm kiếm {% endif %}
       </h2>
       <div class="scroll-x" id="productsContainer">
@@ -79,16 +79,16 @@
           >
         </div>
         {% endfor %} {% else %}
-        <p class="no-result">❌ Không tìm thấy sản phẩm phù hợp.</p>
+        <p class="no-result"> Không tìm thấy sản phẩm phù hợp.</p>
         {% endif %}
       </div>
     </section>
     {% endif %}
 
-    <!-- 📱 iPhone -->
+    <!--  iPhone -->
     {% if search_results is none %}
     <section class="category" id="iphoneSection">
-      <h2>📱 iPhone</h2>
+      <h2> iPhone</h2>
       <div class="scroll-x">
         {% for p in iphones %}
         <div
@@ -113,9 +113,9 @@
       </div>
     </section>
 
-    <!-- 📱 Samsung -->
+    <!--  Samsung -->
     <section class="category" id="samsungSection">
-      <h2>📱 Samsung</h2>
+      <h2> Samsung</h2>
       <div class="scroll-x">
         {% for p in samsungs %}
         <div
@@ -142,9 +142,9 @@
       </div>
     </section>
 
-    <!-- 💻 Laptop -->
+    <!--  Laptop -->
     <section class="category" id="laptopSection">
-      <h2>💻 Laptop</h2>
+      <h2> Laptop</h2>
       <div class="scroll-x">
         {% for p in laptops %}
         <div
@@ -170,13 +170,13 @@
     </section>
     {% endif %}
   
-<!-- 🤖 Nút bật chatbot -->
+<!--  Nút bật chatbot -->
 <div id="chatbot-toggle" onclick="toggleChat()">
   <img src="{{ url_for('static', filename='images/ai.png') }}" alt="Chatbot Icon" />
 </div>
 
 
-<!-- 💬 Hộp chat -->
+<!--  Hộp chat -->
 <div id="chat-box">
   <div id="chat-header">
     <span>Hỗ trợ MHTMH</span>

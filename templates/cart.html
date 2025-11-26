@@ -68,7 +68,7 @@
 
                   {{ item.quantity }}
 
-                  <!-- 🔹 Nút tăng -->
+                  <!--  Nút tăng -->
                   <form
                     action="{{ url_for('cart_bp.update_quantity', product_id=item.product.id, action='increase') }}"
                     method="POST"

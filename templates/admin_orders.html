@@ -44,7 +44,7 @@
             <td>{{ o.bank_account }}</td>
             <td>
                 {% if o.status == "Chờ thanh toán" %}
-                    <a href="{{ url_for('admin_bp.confirm_order', order_id=o.id) }}">✅ Xác nhận</a>
+                    <a href="{{ url_for('admin_bp.confirm_order', order_id=o.id) }}"> Xác nhận</a>
                 {% else %}
                     <span>Đã thanh toán</span>
                 {% endif %}
