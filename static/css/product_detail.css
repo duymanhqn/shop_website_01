@@ -1,6 +1,5 @@
-/* 🎨 product_detail.css */
-/* =============================== */
-/* ✨ Tổng thể */
+
+/*  Tổng thể */
 body {
   font-family: "Segoe UI", Tahoma, sans-serif;
   background: #f5f8ff;
@@ -8,7 +7,7 @@ body {
   padding: 0;
 }
 
-/* 🧭 Navbar */
+/* Navbar */
 nav {
   display: flex;
   justify-content: space-between;
@@ -42,7 +41,7 @@ nav .cart a {
   font-weight: 600;
 }
 
-/* 📦 Header */
+/*  Header */
 header {
   text-align: center;
   background: #ffffff;
@@ -53,7 +52,7 @@ header {
   box-shadow: 0 2px 5px rgba(0,0,0,0.05);
 }
 
-/* 💻 Chi tiết sản phẩm */
+/*  Chi tiết sản phẩm */
 .detail-container {
   display: flex;
   flex-wrap: wrap;
@@ -68,14 +67,14 @@ header {
   padding: 35px;
 }
 
-/* 🖼 Hình ảnh */
+/* Hình ảnh */
 .product-image img {
   width: 320px;
   border-radius: 15px;
   object-fit: cover;
 }
 
-/* 📖 Thông tin */
+/*  Thông tin */
 .product-info {
   flex: 1;
   min-width: 320px;
@@ -101,7 +100,7 @@ header {
   line-height: 1.6;
 }
 
-/* 🧩 Các nút */
+/*  Các nút */
 .buttons {
   display: flex;
   flex-direction: column;
@@ -139,7 +138,7 @@ header {
   background: #e6383a;
 }
 
-/* 🔔 Thông báo nhỏ */
+/*  Thông báo nhỏ */
 .alert-message {
   margin-top: 8px;
   padding: 10px 15px;

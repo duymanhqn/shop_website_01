@@ -6,7 +6,7 @@ import os
 
 class AdminController:
 
-    # ================= LOGIN =================
+    # LOGIN
 
     @staticmethod
     def login(username, password):
@@ -24,12 +24,12 @@ class AdminController:
         session.pop("admin_name", None)
         return redirect(url_for("admin_bp.login"))
 
-    # ================= USERS =================
+    # USERS
     @staticmethod
     def get_all_users():
         return User.query.all()
 
-    # ================= PRODUCTS =================
+    #  PRODUCTS 
 
     @staticmethod
     def get_products_paginated(page=1, per_page=8):
@@ -40,7 +40,7 @@ class AdminController:
     def get_product_by_id(pid):
         return Product.query.get(pid)
 
-    # ---------------- Handle add product ----------------
+    #  Handle add product 
     @staticmethod
     def handle_add_product(request):
         data = {key: request.form.get(key) for key in [
@@ -121,7 +121,7 @@ class AdminController:
             db.session.delete(product)
             db.session.commit()
 
-    # ================= ORDERS =================
+    #  ORDERS 
     @staticmethod
     def get_all_orders():
         results = db.session.query(

@@ -6,7 +6,7 @@ import random
 
 class AuthController:
 
-    #   ĐĂNG KÝ → GỬI OTP
+    #   ĐĂNG KÝ GỬI OTP
 
     @staticmethod
     def register(fullname, gmail, username, password):
@@ -92,8 +92,6 @@ class AuthController:
         )
 
 
-    
-    
 
     @staticmethod
     def login(username, password):
@@ -193,7 +191,7 @@ class AuthController:
             flash("Tài khoản không tồn tại!", "error")
             return redirect(url_for("auth_bp.forgot_password"))
 
-        # LƯU MẬT KHẨU DẠNG THÔ (PLAIN TEXT) – KHÔNG MÃ HÓA
+    
         user.password = new_pass
 
         db.session.commit()

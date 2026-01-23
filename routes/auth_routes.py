@@ -75,7 +75,7 @@ def verify_forgot_page():
         resend_url=url_for("auth_bp.resend_forgot_otp")
     )
 
-# VERIFY OTP RESET PASSWORD (XỬ LÝ)
+# VERIFY OTP RESET PASSWORD 
 @auth_bp.route("/verify-forgot-otp", methods=["POST"])
 def verify_forgot():
     otp = request.form.get("otp")

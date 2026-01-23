@@ -3,7 +3,7 @@ from controllers.admin_controller import AdminController
 
 admin_bp = Blueprint("admin_bp", __name__, url_prefix="/admin")
 
-# =============== LOGIN / LOGOUT ===============
+# LOGIN / LOGOUT
 
 @admin_bp.route("/", methods=["GET", "POST"])
 def login():
@@ -24,7 +24,7 @@ def logout():
     return AdminController.logout()
 
 
-# =============== SẢN PHẨM ===============
+# SẢN PHẨM 
 
 @admin_bp.route("/products")
 def products():
@@ -65,7 +65,7 @@ def delete_product(pid):
     return redirect(url_for("admin_bp.products"))
 
 
-# =============== ĐƠN HÀNG ===============
+# ĐƠN HÀNG
 
 @admin_bp.route("/orders")
 def orders():

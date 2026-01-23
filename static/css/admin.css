@@ -1,4 +1,4 @@
-/* 🔵 Header */
+/*  Header */
 .header {
     background-color: #007bff;
     color: white;
@@ -24,14 +24,14 @@
     font-weight: bold;
 }
 
-/* 🧱 Layout tổng thể */
+/*  Layout tổng thể */
 .container {
     display: flex;
     height: calc(100vh - 80px); /* chiếm toàn bộ phần còn lại của màn hình dưới header */
     overflow: hidden; /* ẩn thanh cuộn */
 }
 
-/* 📋 Sidebar */
+/*  Sidebar */
 .sidebar {
     width: 220px;
     background-color: #dcdcdc;
@@ -54,7 +54,7 @@
     background-color: #c0c0c0;
 }
 
-/* 🗂 Content */
+/*  Content */
 .content {
     flex: 1;
     background-color: #efefef;
@@ -100,17 +100,17 @@ table td input {
     font-size: 14px;
 }
 
-/* 🖼 Ảnh sản phẩm */
+/*  Ảnh sản phẩm */
 
 .product-img {
     width: 80px;
     height: 80px;
-    object-fit: cover; /* cắt ảnh vừa khung */
+    object-fit: cover; 
     border-radius: 4px;
-    border: none; /* bỏ viền */
+    border: none; 
     display: block;
-    margin: 0 auto; /* căn giữa trong ô */
-    box-shadow: none; /* bỏ bóng */
+    margin: 0 auto; 
+    box-shadow: none; 
 }
 
 .product-img:hover {
@@ -118,7 +118,7 @@ table td input {
     box-shadow: 0 0 8px rgba(0,0,0,0.3);
 }
 
-/* 🧭 Nút hành động */
+
 a.edit, a.delete {
     color: #007bff;
     text-decoration: none;
@@ -135,7 +135,6 @@ a.delete:hover {
     text-decoration: underline;
 }
 
-/* Ẩn scrollbar khi không cần */
 ::-webkit-scrollbar {
     width: 8px;
 }
@@ -147,14 +146,14 @@ a.delete:hover {
     background-color: #999;
 }
 
-/* 🧩 Tối ưu hiển thị bảng sản phẩm */
+
 .table-container {
     background: #fff;
     padding: 20px;
     border-radius: 12px;
     box-shadow: 0 2px 10px rgba(0,0,0,0.1);
 }
-/* 🧩 Nút trong form sửa */
+
 .form-buttons {
     margin-top: 20px;
     text-align: center;
@@ -189,7 +188,6 @@ a.delete:hover {
 .btn-back:hover {
     background-color: #5a6268;
 }
-/* 📄 Pagination */
 .pagination {
     text-align: center;
     margin-top: 20px;
@@ -217,7 +215,7 @@ a.delete:hover {
     color: white;
     pointer-events: none;
 }
-/* 📊 Bảng đơn hàng */
+
 table {
     border-radius: 8px;
     overflow: hidden;
@@ -248,10 +246,6 @@ td {
     color: gray;
     font-style: italic;
 }
-/* ================================
-   🧩 TRANG ĐĂNG NHẬP ADMIN
-   (chỉ áp dụng cho admin_login.html)
-================================ */
 
 body.login-page {
   display: flex;

@@ -14,7 +14,7 @@ def show_cart():
 def delete_item(product_id):
     return CartController.delete_item(product_id)
 
-#  Route cập nhật số lượng (giữ nguyên như bạn có)
+#  Route cập nhật số lượng 
 @cart_bp.route("/update_quantity/<int:product_id>/<string:action>", methods=["POST"], endpoint="update_quantity")
 def update_quantity(product_id, action):
     return CartController.update_quantity(product_id, action)

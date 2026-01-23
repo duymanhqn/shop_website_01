@@ -87,7 +87,7 @@ class OrderController:
             partnerCode = "MOMO"
             accessKey = "F8BBA842ECF85"
             secretKey = "K951B6PE1waDMi640xX08PD3vg6EkVlz"
-            orderInfo = "Thanh toán đơn hàng qua MoMo"
+            orderInfo = "Thanh toán MOMO đơn hàng MHTMHShop"
 
             redirectUrl = get_callback_url('order_bp.momo_return')
             ipnUrl = get_callback_url('order_bp.momo_ipn')
@@ -188,10 +188,7 @@ class OrderController:
 
             db.session.commit()
 
-
-            # ==========================
             # GỬI EMAIL XÁC NHẬN ĐƠN HÀNG
-            # ==========================
             user = User.query.get(user_id)
 
             items = []

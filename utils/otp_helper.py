@@ -6,7 +6,7 @@ from utils.send_email import send_otp_email
 
 def generate_or_update_otp(email):
 
-    # Chặn spam gửi OTP trong vòng 60 giây
+    # gửi OTP trong vòng 60 giây
     otp = OtpRegister.query.filter_by(email=email).first()
 
     if otp and otp.created_at > datetime.utcnow() - timedelta(seconds=60):

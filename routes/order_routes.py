@@ -12,7 +12,7 @@ def confirm_order():
     payment_method = request.form.get("payment_method")
     return OrderController.confirm_order(payment_method)
 
-# ➕ Thêm route này để khi bấm Thanh toán qua MoMo trên giao diện hoạt động
+# Thêm route này để khi bấm Thanh toán qua MoMo trên giao diện hoạt động
 @order_bp.route("/momo_payment")
 def momo_payment():
     # Gọi xử lý tạo link thanh toán từ controller

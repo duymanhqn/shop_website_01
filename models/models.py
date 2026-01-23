@@ -6,9 +6,9 @@ from sqlalchemy import Numeric, Float, Integer, String, Text
 # KHỞI TẠO DB ĐÚNG CÁCH — KHÔNG IMPORT LẠI models.py
 db = SQLAlchemy()
 
-# ==============================
+
 # BẢNG USER
-# ==============================
+
 class User(db.Model):
     __tablename__ = "user"
 
@@ -19,9 +19,9 @@ class User(db.Model):
     password = db.Column(db.String(255))
 
 
-# ==============================
+
 # BẢNG OTP
-# ==============================
+
 class OtpRegister(db.Model):
     __tablename__ = "otp_register"
 
@@ -32,9 +32,9 @@ class OtpRegister(db.Model):
     expire_at = db.Column(db.DateTime, nullable=False)
     is_verified = db.Column(db.Boolean, default=False)
 
-# ==============================
+
 # BẢNG PRODUCT
-# ==============================
+
 class Product(db.Model):
     __tablename__ = "product"
 
@@ -55,9 +55,9 @@ class Product(db.Model):
     release_year = db.Column(db.Integer)
 
 
-# ==============================
+
 # BẢNG GIỎ HÀNG
-# ==============================
+
 class CartItem(db.Model):
     __tablename__ = "cart_item"
 
@@ -83,9 +83,9 @@ class CartItem(db.Model):
             self.total_price = self.product.price * self.quantity
 
 
-# ==============================
+
 # BẢNG ORDER
-# ==============================
+
 class Order(db.Model):
     __tablename__ = "orders"
 
@@ -104,9 +104,9 @@ class Order(db.Model):
     user = db.relationship("User", backref="orders", lazy=True)
 
 
-# ==============================
+
 # BẢNG ADMIN
-# ==============================
+
 class Admin(db.Model):
     __tablename__ = "admin"
 

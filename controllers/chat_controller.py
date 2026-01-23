@@ -44,7 +44,7 @@ def get_all_products():
     ]
 
 
-# 3️⃣ Chuẩn hóa text
+#  Chuẩn hóa text
 
 def normalize(text: str):
     if not text:
@@ -148,9 +148,7 @@ def compare_products(n1, n2, products):
         f"➡️ {better['name']} tốt hơn (xét {', '.join(diff) if diff else 'tổng thể'})."
     )
 
-# ==============================
-# 8️⃣ Xử lý tin nhắn chính
-# ==============================
+#  Xử lý tin nhắn chính
 def handle_chat_message(user_message):
     products = get_all_products()
     if not products:

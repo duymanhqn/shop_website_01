@@ -35,7 +35,7 @@ class HomeController:
 
         for p in all_products:
             name_lower = p.name.lower()
-            # Tìm chính xác hoặc tương đồng >= 70%
+            # Tìm chính xác hoặc tương đồng 
             if (keyword_lower in name_lower) or (fuzz.partial_ratio(keyword_lower, name_lower) >= 70):
                 matched_products.append(p)
 
@@ -44,7 +44,7 @@ class HomeController:
 
         return render_template(
             "home.html",
-            search_results=matched_products or None,  # None để ẩn section danh mục
+            search_results=matched_products or None,
             keyword=display_keyword,
             iphones=[],
             samsungs=[],

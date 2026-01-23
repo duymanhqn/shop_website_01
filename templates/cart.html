@@ -57,7 +57,7 @@
               <td>{{ item.product.name }}</td>
               <td>
                 <div class="quantity-control">
-                  <!-- 🔹 Nút giảm -->
+                  <!--  Nút giảm -->
                   <form
                     action="{{ url_for('cart_bp.update_quantity', product_id=item.product.id, action='decrease') }}"
                     method="POST"

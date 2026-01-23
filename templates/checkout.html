@@ -21,7 +21,7 @@
       <div class="right">
         <a href="{{ url_for('cart_bp.cart') }}">Giỏ hàng</a>
         {% if session.get('username') %}
-        <span class="user">👤 {{ session['username'] }}</span>
+        <span class="user"> {{ session['username'] }}</span>
         <a href="{{ url_for('auth_bp.logout') }}" class="logout-btn">Đăng xuất</a>
         {% endif %}
       </div>
