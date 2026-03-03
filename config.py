@@ -17,5 +17,5 @@
 import os
 
 class Config:
-    SQLALCHEMY_DATABASE_URI = "postgresql://shop:dX0BxM0k30PA6QJiZJywYu374eZ6dkNE@dpg-d6jfdgnkjihs739g15k0-a.singapore-postgres.render.com:5432/shop_db_epdu?sslmode=require"
+    SQLALCHEMY_DATABASE_URI = "postgresql://shop:dX0BxM0k3OPA6QJiZJywYu374eZ6dkNE@dpg-d6jfdgnkijhs739g15k0-a/shop_db_epdu"
     SQLALCHEMY_TRACK_MODIFICATIONS = False
